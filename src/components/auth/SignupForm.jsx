@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { User, Mail, Phone, Lock, Users } from 'lucide-react';
-import { userService } from '../../services/userService';
 
 export default function SignupForm({ onSignup }) {
   const [formData, setFormData] = useState({
@@ -13,13 +12,10 @@ export default function SignupForm({ onSignup }) {
   });
 
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError('');
 
     // Check password match
     if (name === 'password' || name === 'confirmPassword') {
@@ -31,40 +27,14 @@ export default function SignupForm({ onSignup }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    // Validate form
-    if (!formData.name || !formData.email || !formData.phone || !formData.password) {
-      setError('Please fill in all fields');
-      setLoading(false);
-      return;
-    }
-
-    if (!passwordMatch) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-
-    // Check if registration is still available
-    if (!userService.canRegister()) {
-      setError('Registration limit reached. Maximum 20 users allowed.');
-      setLoading(false);
-      return;
-    }
-
-    // Attempt registration
-    const result = userService.registerUser(
-      formData.name,
-      formData.email,
-      formData.phone,
-      formData.role,
-      formData.password
-    );
-
-    if (result.success) {
-      onSignup(result.user);
+    if (
+      formData.name &&
+      formData.email &&
+      formData.phone &&
+      formData.password &&
+      passwordMatch
+    ) {
+      onSignup();
       // Reset form
       setFormData({
         name: '',
@@ -74,22 +44,11 @@ export default function SignupForm({ onSignup }) {
         password: '',
         confirmPassword: '',
       });
-    } else {
-      setError(result.message);
     }
-
-    setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Error Message */}
-      {error && (
-        <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-
       {/* Name Field */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
@@ -103,7 +62,6 @@ export default function SignupForm({ onSignup }) {
             placeholder="John Doe"
             className="input-field pl-12"
             required
-            disabled={loading}
           />
         </div>
       </div>
@@ -121,7 +79,6 @@ export default function SignupForm({ onSignup }) {
             placeholder="your.email@example.com"
             className="input-field pl-12"
             required
-            disabled={loading}
           />
         </div>
       </div>
@@ -139,7 +96,6 @@ export default function SignupForm({ onSignup }) {
             placeholder="+1 (555) 000-0000"
             className="input-field pl-12"
             required
-            disabled={loading}
           />
         </div>
       </div>
@@ -154,7 +110,6 @@ export default function SignupForm({ onSignup }) {
             value={formData.role}
             onChange={handleChange}
             className="input-field pl-12 appearance-none cursor-pointer"
-            disabled={loading}
           >
             <option value="student">Student</option>
             <option value="doctor">Doctor</option>
@@ -181,7 +136,6 @@ export default function SignupForm({ onSignup }) {
             placeholder="••••••••"
             className="input-field pl-12"
             required
-            disabled={loading}
           />
         </div>
       </div>
@@ -199,7 +153,6 @@ export default function SignupForm({ onSignup }) {
             placeholder="••••••••"
             className={`input-field pl-12 ${!passwordMatch && formData.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
             required
-            disabled={loading}
           />
         </div>
         {!passwordMatch && formData.confirmPassword && (
@@ -210,10 +163,10 @@ export default function SignupForm({ onSignup }) {
       {/* Sign Up Button */}
       <button
         type="submit"
-        disabled={!passwordMatch || loading}
+        disabled={!passwordMatch}
         className="btn-primary w-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? 'Creating Account...' : 'Create Account'}
+        Create Account
       </button>
     </form>
   );
