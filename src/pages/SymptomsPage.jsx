@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Navbar from '../components/common/Navbar';
-import SymptomsInput from '../components/symptoms/SymptomsInput';
+import SymptomsGrid from '../components/symptoms/SymptomsGrid';
 import ResultCard from '../components/symptoms/ResultCard';
 
 export default function SymptomsPage({ onLogout }) {
@@ -51,20 +51,20 @@ export default function SymptomsPage({ onLogout }) {
     <div className="min-h-screen bg-gradient-to-br from-medical-50 to-wellness-50">
       <Navbar onLogout={onLogout} />
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="space-y-8">
           {/* Header */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 mb-3">
-              Enter Your Symptoms
+              Select Your Symptoms
             </h1>
             <p className="text-gray-600 text-lg">
-              Start typing a symptom below to get started with the classification
+              Click on the symptoms you are experiencing to predict your disease
             </p>
           </div>
 
-          {/* Symptoms Input */}
-          <SymptomsInput
+          {/* Symptoms Grid */}
+          <SymptomsGrid
             selectedSymptoms={selectedSymptoms}
             onAddSymptom={handleAddSymptom}
             onRemoveSymptom={handleRemoveSymptom}
